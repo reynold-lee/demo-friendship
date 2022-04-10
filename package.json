@@ -36,7 +36,6 @@
     "gravatar": "^1.8.2",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.2",
-    "mongoose": "^6.2.10",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "path": "^0.12.7",
