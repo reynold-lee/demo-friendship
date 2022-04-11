@@ -48,6 +48,7 @@ router.post("/signin", async (req: Request, res: Response) => {
     email: user.email,
     name: user.name,
     avatar: user.avatar,
+    role: user.role,
   };
 
   // jsonwebtoken generate
