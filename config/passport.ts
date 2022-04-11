@@ -7,7 +7,7 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 const prisma = new PrismaClient();
 
-const keys = require("./keys");
+import keys from "./keys";
 
 const opts: {
   jwtFromRequest?: string;
