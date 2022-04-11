@@ -10,38 +10,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Role {
-  id          Int @id @default(autoincrement())
-  name        String
-}
-
-model Account_Role {
-  id          Int @id @default(autoincrement())
-  user_id     Int
-  role_id     Int
-}
-
 model User {
-  id          Int @id @default(autoincrement())
-  email       String @unique
+  id          Int     @id @default(autoincrement())
+  email       String  @unique
   name        String 
   avatar      String
   password    String
+  friends     Friend[]
+  role        Role    @default(USER)
 }
 
 model Friend {
-  id          Int @id @default(autoincrement())
-  user_id     Int
+  id          Int     @id @default(autoincrement())
   name        String
-  email       String @unique
-  gender      Int @default(0)
+  email       String  @unique
+  gender      Int     @default(0)
   age         Int
   hobbies     String
   description String
+  user_id     Int
+  user        User    @relation(fields: [user_id], references: [id])
 }
 
-model Account {
-  id          Int @id @default(autoincrement())
-  user_id     Int
-  last_login  DateTime
+enum Role {
+  USER
+  ADMIN
 }
