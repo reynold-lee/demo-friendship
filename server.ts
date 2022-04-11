@@ -1,15 +1,14 @@
-import { Request, Response } from "express";
-
 import express from "express";
 import bodyParser from "body-parser";
 import passport from "passport";
 import cors from "cors";
-import path from "path";
 
 require("dotenv").config();
 
 // Load API
-const users = require("./routes/api/users");
+import auth from "./routes/api/auth";
+import users from "./routes/api/users";
+import friends from "./routes/api/friends";
 
 // App
 const app = express();
@@ -24,7 +23,9 @@ app.use(bodyParser.json());
 // passport middleware
 require("./config/passport")(passport);
 
-app.use("/users", users);
+app.use("/", auth);
+app.use("/users", passport.authenticate("jwt", { session: false }), users);
+app.use("/friends", passport.authenticate("jwt", { session: false }), friends);
 
 const port = process.env.PORT || 5000;
 
