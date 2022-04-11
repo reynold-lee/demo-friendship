@@ -47,5 +47,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
