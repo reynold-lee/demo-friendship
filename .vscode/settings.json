@@ -1,3 +1,10 @@
 {
-  "cSpell.words": ["reduxjs", "signin", "signup"]
+  "cSpell.words": [
+    "Formik",
+    "gstatic",
+    "reduxjs",
+    "signin",
+    "signout",
+    "signup"
+  ]
 }

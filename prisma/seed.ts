@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 (async function main() {
   try {
     bcrypt.genSalt(10, (error, salt) => {
-      bcrypt.hash("admin", salt, async (error, hash) => {
+      bcrypt.hash("12345678", salt, async (error, hash) => {
         const avatar = gravatar.url("reynold.lee720@gmail.com", {
           s: "200",
           r: "pg",
