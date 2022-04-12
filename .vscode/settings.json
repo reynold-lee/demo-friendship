@@ -5,6 +5,8 @@
     "reduxjs",
     "signin",
     "signout",
-    "signup"
+    "signup",
+    "toastify",
+    "toastr"
   ]
 }

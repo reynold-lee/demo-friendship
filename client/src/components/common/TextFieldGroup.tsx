@@ -7,6 +7,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   placeholder: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  info?: string;
 }
 
 const TextFieldGroup: React.FC<InputProps> = ({
@@ -15,6 +16,7 @@ const TextFieldGroup: React.FC<InputProps> = ({
   error,
   placeholder,
   onChange,
+  info,
 }) => {
   return (
     <div className="form-group">
@@ -27,6 +29,7 @@ const TextFieldGroup: React.FC<InputProps> = ({
         name={name}
         onChange={onChange}
       />
+      {info && <small className="form-text text-muted">{info}</small>}
       {error == null ? "" : <div className="invalid-feedback">{error}</div>}
     </div>
   );

@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 router.get("/", async (req: Request, res: Response) => {
   const users = await prisma.user.findMany({
-    select: {
+    include: {
       friends: true,
     },
   });
