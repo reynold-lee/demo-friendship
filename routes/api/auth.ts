@@ -1,12 +1,13 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { Jwt, JwtPayload, Secret } from "jsonwebtoken";
 import gravatar from "gravatar";
 
 import config from "../../config/keys";
 import validateSigninInput from "../validation/signin";
 import validateSignupInput from "../validation/signup";
+import isEmpty from "../validation/is-empty";
 
 const router = Router();
 
@@ -45,10 +46,6 @@ router.post("/signin", async (req: Request, res: Response) => {
   // User matched
   const payload = {
     id: user.id,
-    email: user.email,
-    name: user.name,
-    avatar: user.avatar,
-    role: user.role,
   };
 
   // jsonwebtoken generate
@@ -64,7 +61,7 @@ router.post("/signin", async (req: Request, res: Response) => {
 
       return res.status(200).json({
         success: true,
-        token: "Bearer " + token,
+        token: token,
       });
     }
   );
@@ -110,6 +107,30 @@ router.post("/signup", async (req: Request, res: Response) => {
   });
 
   return res.status(200).json(newUser);
+});
+
+// verify token
+router.post("/verify", async (req: Request, res: Response) => {
+  const { token } = req.body;
+
+  if (isEmpty(token)) {
+    res.status(301).json();
+  } else {
+    const decoded: JwtPayload | string = jwt.verify(
+      token,
+      config.secretOrKey as Secret
+    );
+    const { id } = decoded as { id: number };
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (user) res.status(200).json(user);
+    else res.status(301).json();
+  }
 });
 
 export default router;
