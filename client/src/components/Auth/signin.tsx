@@ -13,6 +13,7 @@ import {
 } from "../../redux/reducers/authReducer";
 
 import TextFieldGroup from "../common/TextFieldGroup";
+import isEmpty from "../../utils/is-empty";
 
 type SingInType = {
   email: string;
@@ -45,8 +46,7 @@ function SignIn() {
     async (values: SingInType) => {
       const res = await dispatch(signin(values));
 
-      if (res.type === "auth/signin/fulfilled")
-        navigate("/dashboard", { replace: true });
+      if (res.type === "auth/signin/fulfilled") navigate("/dashboard");
     },
     [dispatch, navigate]
   );
@@ -74,7 +74,7 @@ function SignIn() {
                     onChange={(e) => {
                       handleChange(e);
 
-                      dispatch(removeErrors({}));
+                      if (!isEmpty(server_errors)) dispatch(removeErrors({}));
                     }}
                   />
                   <TextFieldGroup
@@ -86,7 +86,7 @@ function SignIn() {
                     onChange={(e) => {
                       handleChange(e);
 
-                      dispatch(removeErrors({}));
+                      if (!isEmpty(server_errors)) dispatch(removeErrors({}));
                     }}
                   />
 

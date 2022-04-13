@@ -4,12 +4,10 @@ import {
   createSelector,
 } from "@reduxjs/toolkit";
 import axios from "axios";
-import jwtDecode from "jwt-decode";
 
 import type { RootState } from "../store";
 import { UserType } from "../../types/User";
 import setAuthToken from "../../utils/setAuthToken";
-import isEmpty from "../../utils/is-empty";
 
 // axios set base url
 const instance = axios.create({
@@ -18,6 +16,7 @@ const instance = axios.create({
 interface AuthState {
   loading: boolean;
   isAuthenticated: boolean;
+  isVerifying: boolean;
   user?: Omit<UserType, "friends" | "password">;
   errors?: {
     name?: string;
@@ -30,17 +29,28 @@ interface AuthState {
 const initialState: AuthState = {
   loading: false,
   isAuthenticated: false,
+  isVerifying: true,
 };
 
 // signin
 export const signin = createAsyncThunk(
   "auth/signin",
-  async (request: { email: string; password: string }, { rejectWithValue }) => {
+  async (
+    request: { email: string; password: string },
+    { rejectWithValue, dispatch }
+  ) => {
     try {
       const response = await instance.post<{ success: boolean; token: string }>(
         "/signin",
         request
       );
+
+      const { token } = response.data;
+      // set token to local storage
+      localStorage.setItem("jwtToken", token);
+
+      await dispatch(verify());
+
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error?.response.data);
@@ -69,6 +79,15 @@ export const signup = createAsyncThunk(
   }
 );
 
+// verify token
+export const verify = createAsyncThunk("auth/verify", async () => {
+  const response = await instance.post("/verify", {
+    token: localStorage.getItem("jwtToken"),
+  });
+
+  return response.data;
+});
+
 export const { reducer, actions } = createSlice({
   name: "auth",
   initialState,
@@ -81,13 +100,6 @@ export const { reducer, actions } = createSlice({
 
       state.isAuthenticated = false;
       state.user = action.payload;
-    },
-    setCurrentUser(state, action): void {
-      state.user = action.payload;
-
-      if (!isEmpty(action.payload)) {
-        state.isAuthenticated = true;
-      }
     },
     removeErrors(state, action) {
       state.errors = action.payload;
@@ -103,19 +115,8 @@ export const { reducer, actions } = createSlice({
 
         const { token } = action.payload;
 
-        // set token to local storage
-        localStorage.setItem("jwtToken", token);
-
         // set token to auth header
         setAuthToken(token);
-
-        // decode jwt token
-        const decoded =
-          jwtDecode<Omit<UserType, "friends" | "password">>(token);
-
-        state.isAuthenticated = true;
-        state.user = decoded;
-        state.errors = {};
       })
       .addCase(signin.rejected, (state, action) => {
         state.loading = false;
@@ -135,6 +136,18 @@ export const { reducer, actions } = createSlice({
           password?: string;
           password2?: string;
         };
+      })
+      .addCase(verify.pending, (state, action) => {
+        state.isVerifying = true;
+      })
+      .addCase(verify.fulfilled, (state, action) => {
+        state.isVerifying = false;
+        state.isAuthenticated = true;
+        state.user = action.payload as Omit<UserType, "friends" | "password">;
+      })
+      .addCase(verify.rejected, (state, action) => {
+        state.isVerifying = false;
+        state.isAuthenticated = false;
       });
   },
 });
@@ -158,6 +171,11 @@ export const selectLoading = createSelector(
   (state) => state.loading
 );
 
-export const { setCurrentUser, signout, removeErrors } = actions;
+export const selectIsVerifying = createSelector(
+  selectState,
+  (state) => state.isVerifying
+);
+
+export const { signout, removeErrors } = actions;
 
 export default reducer;

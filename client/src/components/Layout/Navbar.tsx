@@ -15,51 +15,89 @@ function Navbar() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectUser);
 
-  const handleSignOut = () => {
+  const handleSignOut = React.useCallback(() => {
     dispatch(signout({}));
-  };
+  }, [dispatch]);
 
-  const authLinks = (
-    <ul className="navbar-nav ml-auto">
-      <li className="nav-item">
-        <Link className="nav-link" to="/feed">
-          Post Feed
-        </Link>
-      </li>
-      <li className="nav-item">
-        <Link className="nav-link" to="/dashboard">
-          Dashboard
-        </Link>
-      </li>
-      <li className="nav-item">
-        <Button variant="link" className="nav-link" onClick={handleSignOut}>
-          <img
-            src={user?.avatar}
-            className="rounded-circle"
-            alt={user?.name}
-            style={{ width: "25px", marginRight: "5px" }}
-            title="You must have a Gravatar to display"
-          />
-          Sign Out
-        </Button>
-      </li>
-    </ul>
-  );
+  const userLinks = React.useMemo<React.ReactNode>(() => {
+    return (
+      <ul className="navbar-nav ml-auto">
+        <li className="nav-item">
+          <Link className="nav-link" to="/feed">
+            Post Feed
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link className="nav-link" to="/dashboard/user">
+            Dashboard
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Button
+            variant="link"
+            className="nav-link"
+            onClick={() => handleSignOut()}
+          >
+            <img
+              src={user?.avatar}
+              className="rounded-circle"
+              alt={user?.name}
+              style={{ width: "25px", marginRight: "5px" }}
+              title="You must have a Gravatar to display"
+            />
+            Sign Out
+          </Button>
+        </li>
+      </ul>
+    );
+  }, [handleSignOut, user?.avatar, user?.name]);
 
-  const guestLinks = (
-    <ul className="navbar-nav ml-auto">
-      <li className="nav-item">
-        <Link className="nav-link" to="/signup">
-          Sign Up
-        </Link>
-      </li>
-      <li className="nav-item">
-        <Link className="nav-link" to="/signin">
-          Sign In
-        </Link>
-      </li>
-    </ul>
-  );
+  const adminLinks = React.useMemo(() => {
+    return (
+      <div>
+        <ul className="navbar-nav ml-auto">
+          <li className="nav-item">
+            <Link className="nav-link" to="dashboard/admin/users">
+              Users
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Button
+              variant="link"
+              className="nav-link"
+              onClick={() => handleSignOut()}
+            >
+              <img
+                src={user?.avatar}
+                className="rounded-circle"
+                alt={user?.name}
+                style={{ width: "25px", marginRight: "5px" }}
+                title="You must have a Gravatar to display"
+              />
+              Sign Out
+            </Button>
+          </li>
+        </ul>
+      </div>
+    );
+  }, [handleSignOut, user?.avatar, user?.name]);
+
+  const guestLinks = React.useMemo<React.ReactNode>(() => {
+    return (
+      <ul className="navbar-nav ml-auto">
+        <li className="nav-item">
+          <Link className="nav-link" to="/signup">
+            Sign Up
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link className="nav-link" to="/signin">
+            Sign In
+          </Link>
+        </li>
+      </ul>
+    );
+  }, []);
 
   return (
     <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
@@ -80,7 +118,11 @@ function Navbar() {
           className="collapse navbar-collapse justify-content-end"
           id="mobile-nav"
         >
-          {isAuthenticated ? authLinks : guestLinks}
+          {isAuthenticated
+            ? user?.role === "ADMIN"
+              ? adminLinks
+              : userLinks
+            : guestLinks}
         </div>
       </div>
     </nav>
