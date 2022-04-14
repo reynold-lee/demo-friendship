@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { Spinner } from "react-bootstrap";
+import * as Mui from "@mui/material";
 
 import Navbar from "./components/Layout/Navbar";
 import SignIn from "./components/Auth/signin";
@@ -30,7 +30,7 @@ function App() {
   }, [dispatch]);
 
   return isVerifying ? (
-    <Spinner animation="grow" />
+    <Mui.CircularProgress />
   ) : (
     <div>
       <Navbar />
@@ -46,15 +46,36 @@ function App() {
         />
 
         <Route path="/dashboard" element={<PrivateRoute />}>
+          <Route
+            index
+            element={
+              currentUser?.role === "ADMIN" ? (
+                <Navigate to="admin" />
+              ) : (
+                <Navigate to="" />
+              )
+            }
+          />
           {currentUser?.role === "ADMIN" ? (
-            <Route path="admin/*" element={<Admin />} />
+            <Route>
+              <Route path="admin/*" element={<Admin />} />
+            </Route>
           ) : (
             <Route>
               <Route path="" element={<Dashboard />} />
-              <Route path="*" element={<Navigate to="" />} />
             </Route>
           )}
         </Route>
+        <Route
+          path="*"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" />
+            ) : (
+              <Navigate to="/signin" />
+            )
+          }
+        />
       </Routes>
     </div>
   );

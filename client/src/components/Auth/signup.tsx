@@ -1,9 +1,12 @@
-import * as React from "react";
+import React from "react";
+import * as Mui from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Button, Spinner } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import { Formik } from "formik";
 import * as Yup from "yup";
+
+import LoadingButton from "@mui/lab/LoadingButton";
+import HowToRegOutlinedIcon from "@mui/icons-material/HowToRegOutlined";
 
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import {
@@ -13,7 +16,7 @@ import {
   signup,
 } from "../../redux/reducers/authReducer";
 
-import TextFieldGroup from "../common/TextFieldGroup";
+import isEmpty from "../../utils/is-empty";
 
 type SignUpType = {
   email: string;
@@ -70,91 +73,139 @@ function SignUp() {
   return (
     <div className="register">
       <ToastContainer />
-      <div className="container">
-        <div className="row">
-          <div className="col-md-6 m-auto">
-            <h1 className="display-4 text-center">Sign Up</h1>
-            <p className="lead text-center">Create your DevConnector account</p>
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={handleSignUp}
-            >
-              {({ handleSubmit, handleChange, errors, values }) => (
-                <div className="d-grid gap-3">
-                  <TextFieldGroup
-                    type="text"
-                    error={errors.name || server_errors?.name}
-                    placeholder="Name"
-                    name="name"
-                    value={values.name}
-                    onChange={(e) => {
-                      handleChange(e);
+      <Mui.Container className="container" maxWidth="xs">
+        <Mui.CssBaseline />
+        <Mui.Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Mui.Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <HowToRegOutlinedIcon />
+          </Mui.Avatar>
+          <Mui.Typography component="h1" variant="h5">
+            Sign Up
+          </Mui.Typography>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSignUp}
+          >
+            {({ handleSubmit, handleChange, errors, values, touched }) => (
+              <Mui.Box
+                component="form"
+                onSubmit={handleSubmit}
+                noValidate
+                sx={{ mt: 1 }}
+              >
+                <Mui.TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="name"
+                  label="Name"
+                  name="name"
+                  autoComplete="name"
+                  value={values.name}
+                  onChange={(e) => {
+                    handleChange(e);
+                    if (!isEmpty(server_errors)) dispatch(removeErrors({}));
+                  }}
+                  error={
+                    (touched.name && Boolean(errors.name)) ||
+                    !isEmpty(server_errors?.name)
+                  }
+                  helperText={
+                    (touched.name && errors.name) || server_errors?.name
+                  }
+                />
+                <Mui.TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  value={values.email}
+                  onChange={(e) => {
+                    handleChange(e);
+                    if (!isEmpty(server_errors)) dispatch(removeErrors({}));
+                  }}
+                  error={
+                    (touched.email && Boolean(errors.email)) ||
+                    !isEmpty(server_errors?.email)
+                  }
+                  helperText={
+                    (touched.email && errors.email) || server_errors?.email
+                  }
+                />
 
-                      dispatch(removeErrors({}));
-                    }}
-                  />
-                  <TextFieldGroup
-                    type="email"
-                    error={errors.email || server_errors?.email}
-                    placeholder="Email Address"
-                    name="email"
-                    value={values.email}
-                    onChange={(e) => {
-                      handleChange(e);
+                <Mui.TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="password"
+                  label="Password"
+                  name="password"
+                  type="password"
+                  autoComplete="password"
+                  value={values.password}
+                  onChange={(e) => {
+                    handleChange(e);
+                    if (!isEmpty(server_errors)) dispatch(removeErrors({}));
+                  }}
+                  error={
+                    (touched.password && Boolean(errors.password)) ||
+                    !isEmpty(server_errors?.password)
+                  }
+                  helperText={
+                    (touched.password && errors.password) ||
+                    server_errors?.password
+                  }
+                />
 
-                      dispatch(removeErrors({}));
-                    }}
-                    info="This site uses Gravatar so if you want a profile image, use
-             a Gravatar email"
-                  />
-                  <TextFieldGroup
-                    type="password"
-                    error={errors.password || server_errors?.password}
-                    placeholder="Password"
-                    name="password"
-                    value={values.password}
-                    onChange={(e) => {
-                      handleChange(e);
+                <Mui.TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="password2"
+                  label="Password2"
+                  name="password2"
+                  type="password"
+                  autoComplete="password2"
+                  value={values.password2}
+                  onChange={(e) => {
+                    handleChange(e);
+                    if (!isEmpty(server_errors)) dispatch(removeErrors({}));
+                  }}
+                  error={
+                    (touched.password2 && Boolean(errors.password2)) ||
+                    !isEmpty(server_errors?.password2)
+                  }
+                  helperText={
+                    (touched.password2 && errors.password2) ||
+                    server_errors?.password2
+                  }
+                />
 
-                      dispatch(removeErrors({}));
-                    }}
-                  />
-                  <TextFieldGroup
-                    type="password"
-                    error={errors.password2 || server_errors?.password2}
-                    placeholder="Confirm Password"
-                    name="password2"
-                    value={values.password2}
-                    onChange={(e) => {
-                      handleChange(e);
-
-                      dispatch(removeErrors({}));
-                    }}
-                  />
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    onClick={handleSubmit as any}
-                  >
-                    {loading ? (
-                      <Spinner
-                        as="span"
-                        animation="border"
-                        size="sm"
-                        role="status"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      "Sign Up"
-                    )}
-                  </Button>
-                </div>
-              )}
-            </Formik>
-          </div>
-        </div>
-      </div>
+                <LoadingButton
+                  onClick={() => handleSubmit()}
+                  loadingIndicator="Signuping..."
+                  loading={loading}
+                  variant="contained"
+                  fullWidth
+                >
+                  Sign Up
+                </LoadingButton>
+              </Mui.Box>
+            )}
+          </Formik>
+        </Mui.Box>
+      </Mui.Container>
     </div>
   );
 }

@@ -8,17 +8,23 @@ import { store } from "./redux/store";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
-import "bootstrap/dist/css/bootstrap.min.css";
+import { createTheme, ThemeProvider } from "@mui/material";
+
+import "./index.css";
 
 const rootElement = document.getElementById("root");
 const root = ReactDOM.createRoot(rootElement!);
 
+const theme = createTheme();
+
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
     </Provider>
   </React.StrictMode>
 );

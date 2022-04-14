@@ -1,8 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Spinner } from "react-bootstrap";
+import * as Mui from "@mui/material";
 import { Formik } from "formik";
 import * as Yup from "yup";
+
+import LoadingButton from "@mui/lab/LoadingButton";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
@@ -12,7 +15,6 @@ import {
   removeErrors,
 } from "../../redux/reducers/authReducer";
 
-import TextFieldGroup from "../common/TextFieldGroup";
 import isEmpty from "../../utils/is-empty";
 
 type SingInType = {
@@ -53,66 +55,94 @@ function SignIn() {
 
   return (
     <div className="login">
-      <div className="container">
-        <div className="row">
-          <div className="col-md-6 m-auto">
-            <h1 className="display-4 text-center">Sign In</h1>
-            <p className="lead text-center">Sign in to your account</p>
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={handleSignIn}
-            >
-              {({ handleSubmit, handleChange, errors, values }) => (
-                <div className="d-grid gap-3">
-                  <TextFieldGroup
-                    type="email"
-                    error={errors.email || server_errors?.email}
-                    placeholder="Email Address"
-                    name="email"
-                    value={values.email}
-                    onChange={(e) => {
-                      handleChange(e);
+      <Mui.Container component="main" maxWidth="xs">
+        <Mui.CssBaseline />
+        <Mui.Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Mui.Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <LockOutlinedIcon />
+          </Mui.Avatar>
+          <Mui.Typography component="h1" variant="h5">
+            Sign In
+          </Mui.Typography>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSignIn}
+          >
+            {({ handleSubmit, handleChange, errors, values, touched }) => (
+              <Mui.Box
+                component="form"
+                onSubmit={handleSubmit}
+                noValidate
+                sx={{ mt: 1 }}
+              >
+                <Mui.TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  value={values.email}
+                  onChange={(e) => {
+                    handleChange(e);
+                    if (!isEmpty(server_errors)) dispatch(removeErrors({}));
+                  }}
+                  error={
+                    (touched.email && Boolean(errors.email)) ||
+                    !isEmpty(server_errors?.email)
+                  }
+                  helperText={
+                    (touched.email && errors.email) || server_errors?.email
+                  }
+                />
 
-                      if (!isEmpty(server_errors)) dispatch(removeErrors({}));
-                    }}
-                  />
-                  <TextFieldGroup
-                    type="password"
-                    error={errors.password || server_errors?.password}
-                    placeholder="Password"
-                    name="password"
-                    value={values.password}
-                    onChange={(e) => {
-                      handleChange(e);
+                <Mui.TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="password"
+                  label="Password"
+                  name="password"
+                  type="password"
+                  autoComplete="password"
+                  value={values.password}
+                  onChange={(e) => {
+                    handleChange(e);
+                    if (!isEmpty(server_errors)) dispatch(removeErrors({}));
+                  }}
+                  error={
+                    (touched.password && Boolean(errors.password)) ||
+                    !isEmpty(server_errors?.password)
+                  }
+                  helperText={
+                    (touched.password && errors.password) ||
+                    server_errors?.password
+                  }
+                />
 
-                      if (!isEmpty(server_errors)) dispatch(removeErrors({}));
-                    }}
-                  />
-
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    onClick={handleSubmit as any}
-                  >
-                    {loading ? (
-                      <Spinner
-                        as="span"
-                        animation="border"
-                        size="sm"
-                        role="status"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      "Sign In"
-                    )}
-                  </Button>
-                </div>
-              )}
-            </Formik>
-          </div>
-        </div>
-      </div>
+                <LoadingButton
+                  onClick={() => handleSubmit()}
+                  loadingIndicator="Signining..."
+                  loading={loading}
+                  variant="contained"
+                  fullWidth
+                >
+                  Sign In
+                </LoadingButton>
+              </Mui.Box>
+            )}
+          </Formik>
+        </Mui.Box>
+      </Mui.Container>
     </div>
   );
 }

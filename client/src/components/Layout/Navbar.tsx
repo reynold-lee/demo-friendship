@@ -1,6 +1,8 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
-import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import * as Mui from "@mui/material";
+
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import {
@@ -11,6 +13,7 @@ import {
 
 function Navbar() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectUser);
@@ -21,111 +24,167 @@ function Navbar() {
 
   const userLinks = React.useMemo<React.ReactNode>(() => {
     return (
-      <ul className="navbar-nav ml-auto">
-        <li className="nav-item">
-          <Link className="nav-link" to="/feed">
-            Post Feed
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="/dashboard/user">
-            Dashboard
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Button
-            variant="link"
-            className="nav-link"
+      <Mui.Box
+        justifyContent="space-between"
+        sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+      >
+        <Mui.Button sx={{ my: 2, color: "white", display: "block" }}>
+          <Mui.Avatar
+            sx={{ width: 24, height: 24 }}
+            alt={user?.name}
+            src={user?.avatar}
+          />
+        </Mui.Button>
+
+        <Mui.Stack direction="row" justifyContent="flex-end">
+          <Mui.Button
+            sx={{ my: 2, color: "white", display: "block" }}
+            onClick={() => navigate("dashboard/friends")}
+          >
+            My Friends
+          </Mui.Button>
+          <Mui.Button
+            sx={{ my: 2, color: "white", display: "block" }}
+            onClick={() => navigate("dashboard/profile")}
+          >
+            My Profile
+          </Mui.Button>
+          <Mui.IconButton
+            color="inherit"
+            aria-label="menu"
+            sx={{ my: 2 }}
             onClick={() => handleSignOut()}
           >
-            <img
-              src={user?.avatar}
-              className="rounded-circle"
-              alt={user?.name}
-              style={{ width: "25px", marginRight: "5px" }}
-              title="You must have a Gravatar to display"
-            />
-            Sign Out
-          </Button>
-        </li>
-      </ul>
+            <ExitToAppIcon />
+          </Mui.IconButton>
+        </Mui.Stack>
+      </Mui.Box>
     );
-  }, [handleSignOut, user?.avatar, user?.name]);
+  }, [handleSignOut, navigate, user?.avatar, user?.name]);
 
   const adminLinks = React.useMemo(() => {
     return (
-      <div>
-        <ul className="navbar-nav ml-auto">
-          <li className="nav-item">
-            <Link className="nav-link" to="dashboard/admin/users">
-              Users
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Button
-              variant="link"
-              className="nav-link"
-              onClick={() => handleSignOut()}
-            >
-              <img
-                src={user?.avatar}
-                className="rounded-circle"
-                alt={user?.name}
-                style={{ width: "25px", marginRight: "5px" }}
-                title="You must have a Gravatar to display"
-              />
-              Sign Out
-            </Button>
-          </li>
-        </ul>
-      </div>
+      <Mui.Box
+        justifyContent="space-between"
+        sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+      >
+        <Mui.Button sx={{ my: 2, color: "white", display: "block" }}>
+          <Mui.Avatar
+            sx={{ width: 24, height: 24 }}
+            alt={user?.name}
+            src={user?.avatar}
+          />
+        </Mui.Button>
+
+        <Mui.Stack direction="row">
+          <Mui.Button
+            sx={{ my: 2, color: "white", display: "block" }}
+            onClick={() => navigate("dashboard/admin/users")}
+          >
+            Users
+          </Mui.Button>
+          <Mui.IconButton
+            color="inherit"
+            aria-label="menu"
+            sx={{ my: 2 }}
+            onClick={() => handleSignOut()}
+          >
+            <ExitToAppIcon />
+          </Mui.IconButton>
+        </Mui.Stack>
+      </Mui.Box>
     );
-  }, [handleSignOut, user?.avatar, user?.name]);
+  }, [handleSignOut, navigate, user?.avatar, user?.name]);
 
   const guestLinks = React.useMemo<React.ReactNode>(() => {
     return (
-      <ul className="navbar-nav ml-auto">
-        <li className="nav-item">
-          <Link className="nav-link" to="/signup">
-            Sign Up
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="/signin">
-            Sign In
-          </Link>
-        </li>
-      </ul>
+      <Mui.Box
+        justifyContent="flex-end"
+        sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+      >
+        <Mui.Button
+          sx={{ my: 2, color: "white", display: "block" }}
+          onClick={() => navigate("signin")}
+        >
+          SignIn
+        </Mui.Button>
+        <Mui.Button
+          sx={{ my: 2, color: "white", display: "block" }}
+          onClick={() => navigate("signup")}
+        >
+          SignUp
+        </Mui.Button>
+      </Mui.Box>
     );
-  }, []);
+  }, [navigate]);
 
   return (
-    <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
-      <div className="container">
-        <Link className="navbar-brand" to="/">
-          Friend
-        </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#mobile-nav"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+    <Mui.AppBar position="static">
+      <Mui.Container maxWidth="xl">
+        <Mui.Toolbar disableGutters>
+          {/* TODO :: Responsive */}
+          <Mui.Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ mr: 2, display: { xs: "none", md: "flex" } }}
+          >
+            FRIEND
+          </Mui.Typography>
 
-        <div
-          className="collapse navbar-collapse justify-content-end"
-          id="mobile-nav"
-        >
+          {/*<Mui.Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+            <Mui.IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-app-bar"
+              aria-haspopup="true"
+              color="inherit"
+            >
+              <MenuIcon />
+            </Mui.IconButton>
+            <Mui.Menu
+              id="menu-app-bar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+              open={Boolean(anchorElNav)}
+              sx={{
+                display: { xs: "block", md: "none" },
+              }}
+            >
+              <Mui.MenuItem>
+                <Mui.Typography textAlign="center">SignIn</Mui.Typography>
+              </Mui.MenuItem>
+              <Mui.MenuItem>
+                <Mui.Typography textAlign="center">SignIn</Mui.Typography>
+              </Mui.MenuItem>
+            </Mui.Menu>
+          </Mui.Box> */}
+
+          <Mui.Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
+          >
+            Friend
+          </Mui.Typography>
+
           {isAuthenticated
             ? user?.role === "ADMIN"
               ? adminLinks
               : userLinks
             : guestLinks}
-        </div>
-      </div>
-    </nav>
+        </Mui.Toolbar>
+      </Mui.Container>
+    </Mui.AppBar>
   );
 }
 
