@@ -1,7 +1,7 @@
-import { Router, Request, Response } from "express";
+import e, { Router, Request, Response } from "express";
 import { PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import jwt, { Jwt, JwtPayload, Secret } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import gravatar from "gravatar";
 
 import config from "../../config/keys";
@@ -114,22 +114,31 @@ router.post("/verify", async (req: Request, res: Response) => {
   const { token } = req.body;
 
   if (isEmpty(token)) {
-    res.status(301).json();
-  } else {
-    const decoded: JwtPayload | string = jwt.verify(
-      token,
-      config.secretOrKey as Secret
-    );
-    const { id } = decoded as { id: number };
-
-    const user = await prisma.user.findUnique({
-      where: {
-        id: id,
-      },
+    res.status(301).json({
+      verify: false,
     });
+  } else {
+    try {
+      const decoded = jwt.verify(token, config.secretOrKey as Secret);
 
-    if (user) res.status(200).json(user);
-    else res.status(301).json();
+      const { id } = decoded as { id: number };
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      if (user) res.status(200).json(user);
+      else
+        res.status(301).json({
+          verify: false,
+        });
+    } catch (error) {
+      res.status(301).json({
+        verify: false,
+      });
+    }
   }
 });
 
