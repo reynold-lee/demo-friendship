@@ -1,7 +1,7 @@
-import e, { Router, Request, Response } from "express";
+import { Router, Request, Response } from "express";
 import { PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import jwt, { JwtPayload, Secret } from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
 import gravatar from "gravatar";
 
 import config from "../../config/keys";
@@ -13,6 +13,9 @@ const router = Router();
 
 const prisma = new PrismaClient();
 
+// @API     /signin
+// @DESC    Sign in
+// @PARAMS  User email & password
 router.post("/signin", async (req: Request, res: Response) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -67,6 +70,9 @@ router.post("/signin", async (req: Request, res: Response) => {
   );
 });
 
+// @API     /signup
+// @DESC    Sign up new user
+// @PARAMS  User data
 router.post("/signup", async (req: Request, res: Response) => {
   const { errors, isValid } = validateSignupInput(req.body);
 
@@ -109,7 +115,9 @@ router.post("/signup", async (req: Request, res: Response) => {
   return res.status(200).json(newUser);
 });
 
-// verify token
+// @API     /verify
+// @DESC    Verify token
+// @PARAMS  Token data
 router.post("/verify", async (req: Request, res: Response) => {
   const { token } = req.body;
 
