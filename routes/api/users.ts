@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import bcrypt from "bcryptjs";
 import { PrismaClient, Role } from "@prisma/client";
 
 const router = Router();
@@ -67,6 +68,25 @@ router.delete("/user/:id", async (req: Request, res: Response) => {
   });
 
   res.status(200).json();
+});
+
+// @API     PUT users/user/:id/resetpassword
+// @DESC    Reset user's password (1234567890)
+// @PARAMS  user id
+router.put("/user/:id/resetpassword", async (req: Request, res: Response) => {
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash("1234567890", salt);
+
+  const user = await prisma.user.update({
+    where: {
+      id: Number(req.params.id),
+    },
+    data: {
+      password: hash,
+    },
+  });
+
+  res.status(200).json(user);
 });
 
 // @API     GET users/total
