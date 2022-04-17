@@ -6,7 +6,7 @@ import Navbar from "./components/Layout/Navbar";
 import SignIn from "./components/Auth/signin";
 import SignUp from "./components/Auth/signup";
 import { PrivateRoute } from "./components/common/PrivateRoute";
-import Dashboard from "./components/Dashboard/dashboard";
+import Dashboard from "./components/Dashboard";
 import Admin from "./components/Admin";
 
 import { useAppSelector, useAppDispatch } from "./redux/hooks";
@@ -26,7 +26,9 @@ function App() {
   const currentUser = useAppSelector(selectUser);
 
   React.useEffect(() => {
-    dispatch(verify());
+    return () => {
+      dispatch(verify());
+    };
   }, [dispatch]);
 
   return isVerifying ? (
@@ -52,7 +54,7 @@ function App() {
               currentUser?.role === "ADMIN" ? (
                 <Navigate to="admin" />
               ) : (
-                <Navigate to="" />
+                <Navigate to="user" />
               )
             }
           />
@@ -62,7 +64,7 @@ function App() {
             </Route>
           ) : (
             <Route>
-              <Route path="" element={<Dashboard />} />
+              <Route path="user/*" element={<Dashboard />} />
             </Route>
           )}
         </Route>

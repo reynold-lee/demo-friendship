@@ -7,7 +7,6 @@ import axios from "axios";
 
 import type { RootState } from "../store";
 import { UserType } from "../../types/User";
-import setAuthToken from "../../utils/setAuthToken";
 
 // axios set base url
 const instance = axios.create({
@@ -74,7 +73,7 @@ export const signup = createAsyncThunk(
       const response = await instance.post("/signup", request);
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error?.response.dat);
+      return rejectWithValue(error?.response.data);
     }
   }
 );
@@ -96,8 +95,6 @@ export const { reducer, actions } = createSlice({
       // remove token from local storage
       localStorage.removeItem("jwtToken");
 
-      setAuthToken("");
-
       state.isAuthenticated = false;
       state.user = action.payload;
     },
@@ -112,11 +109,6 @@ export const { reducer, actions } = createSlice({
       })
       .addCase(signin.fulfilled, (state, action) => {
         state.loading = false;
-
-        const { token } = action.payload;
-
-        // set token to auth header
-        setAuthToken(token);
       })
       .addCase(signin.rejected, (state, action) => {
         state.loading = false;

@@ -105,7 +105,7 @@ router.post("/signup", async (req: Request, res: Response) => {
   const newUser = await prisma.user.create({
     data: {
       email: req.body.email,
-      name: req.body.email,
+      name: req.body.name,
       avatar: avatar,
       password: hash,
       role: Role.USER,
@@ -124,6 +124,7 @@ router.post("/verify", async (req: Request, res: Response) => {
   if (isEmpty(token)) {
     res.status(301).json({
       verify: false,
+      error: "Empty token",
     });
   } else {
     try {
@@ -141,10 +142,12 @@ router.post("/verify", async (req: Request, res: Response) => {
       else
         res.status(301).json({
           verify: false,
+          error: "User not found",
         });
     } catch (error) {
       res.status(301).json({
         verify: false,
+        error: error,
       });
     }
   }

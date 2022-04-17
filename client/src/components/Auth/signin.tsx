@@ -48,7 +48,7 @@ function SignIn() {
     async (values: SingInType) => {
       const res = await dispatch(signin(values));
 
-      if (res.type === "auth/signin/fulfilled") navigate("/dashboard");
+      if (res.type === "auth/signin/fulfilled") navigate("/dashboard/user");
     },
     [dispatch, navigate]
   );
