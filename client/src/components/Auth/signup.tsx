@@ -54,20 +54,15 @@ function SignUp() {
   });
 
   const handleSignUp = async (values: SignUpType) => {
-    const res = await dispatch(signup(values));
-
-    if (res.type === "auth/signup/fulfilled") {
-      toast.configure({
-        toastClassName: "toast",
-        bodyClassName: "toast-body",
-      });
-
-      toast.success("Success", {
-        closeButton: true,
-      });
-
-      navigate("/signin");
-    }
+    await toast.promise(dispatch(signup(values)), {
+      pending: "Processing...",
+      success: {
+        render() {
+          navigate("/signin");
+        },
+      },
+      error: "Failed",
+    });
   };
 
   return (

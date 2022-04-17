@@ -14,6 +14,7 @@ router.get("/", async (req: Request, res: Response) => {
     include: {
       friends: true,
     },
+    orderBy: [{ id: "asc" }],
   });
 
   res.status(200).send(users);
@@ -67,7 +68,9 @@ router.delete("/user/:id", async (req: Request, res: Response) => {
     },
   });
 
-  res.status(200).json();
+  res.status(200).json({
+    id: req.params.id,
+  });
 });
 
 // @API     PUT users/user/:id/resetpassword
