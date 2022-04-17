@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import * as Mui from "@mui/material";
 
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import MenuIcon from "@mui/icons-material/Menu";
 
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
 import {
@@ -39,15 +40,15 @@ function Navbar() {
         <Mui.Stack direction="row" justifyContent="flex-end">
           <Mui.Button
             sx={{ my: 2, color: "white", display: "block" }}
-            onClick={() => navigate("dashboard/friends")}
+            onClick={() => navigate("dashboard/user/friends")}
           >
-            My Friends
+            Friends
           </Mui.Button>
           <Mui.Button
             sx={{ my: 2, color: "white", display: "block" }}
-            onClick={() => navigate("dashboard/profile")}
+            onClick={() => navigate("dashboard/user/profile")}
           >
-            My Profile
+            Profile
           </Mui.Button>
           <Mui.IconButton
             color="inherit"
@@ -77,6 +78,12 @@ function Navbar() {
         </Mui.Button>
 
         <Mui.Stack direction="row">
+          <Mui.Button
+            sx={{ my: 2, color: "white", display: "block" }}
+            onClick={() => navigate("dashboard/admin/summary")}
+          >
+            Summary
+          </Mui.Button>
           <Mui.Button
             sx={{ my: 2, color: "white", display: "block" }}
             onClick={() => navigate("dashboard/admin/users")}
@@ -132,7 +139,7 @@ function Navbar() {
             FRIEND
           </Mui.Typography>
 
-          {/*<Mui.Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Mui.Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <Mui.IconButton
               size="large"
               aria-label="account of current user"
@@ -144,7 +151,6 @@ function Navbar() {
             </Mui.IconButton>
             <Mui.Menu
               id="menu-app-bar"
-              anchorEl={anchorElNav}
               anchorOrigin={{
                 vertical: "bottom",
                 horizontal: "left",
@@ -154,7 +160,7 @@ function Navbar() {
                 vertical: "top",
                 horizontal: "left",
               }}
-              open={Boolean(anchorElNav)}
+              open={false}
               sx={{
                 display: { xs: "block", md: "none" },
               }}
@@ -166,7 +172,7 @@ function Navbar() {
                 <Mui.Typography textAlign="center">SignIn</Mui.Typography>
               </Mui.MenuItem>
             </Mui.Menu>
-          </Mui.Box> */}
+          </Mui.Box>
 
           <Mui.Typography
             variant="h6"
