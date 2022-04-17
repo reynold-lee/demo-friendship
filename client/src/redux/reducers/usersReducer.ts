@@ -19,6 +19,12 @@ const instance = axios.create({
 interface UsersState {
   loading: boolean;
   users: UserType[];
+  errors?: {
+    name?: string;
+    email?: string;
+    password?: string;
+    password2?: string;
+  };
 }
 
 const initialState: UsersState = {
@@ -35,6 +41,21 @@ export const getUsers = createAsyncThunk("users/getUsers", async () => {
   }
 });
 
+export const addUser = createAsyncThunk(
+  "users/addUser",
+  async (
+    request: { name: string; email: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await instance.post("users/user", request);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error?.response.data);
+    }
+  }
+);
+
 export const updateUser = createAsyncThunk(
   "user/update",
   async (request: { id: number; email?: string; name?: string }) => {
@@ -46,9 +67,8 @@ export const updateUser = createAsyncThunk(
           name: request.name,
         }
       );
-
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw error;
     }
   }
@@ -56,10 +76,10 @@ export const updateUser = createAsyncThunk(
 
 export const resetPassword = createAsyncThunk(
   "user/resetpassword",
-  async (request: { id: number }) => {
+  async (id: number) => {
     try {
       const response = await instance.put(
-        "users/user/" + request.id.toString() + "/resetpassword"
+        "users/user/" + id.toString() + "/resetpassword"
       );
 
       return response.data;
@@ -71,11 +91,9 @@ export const resetPassword = createAsyncThunk(
 
 export const deleteUser = createAsyncThunk(
   "user/delete",
-  async (request: { id: number }) => {
+  async (id: number) => {
     try {
-      const response = await instance.delete(
-        "users/user/" + request.id.toString()
-      );
+      const response = await instance.delete("users/user/" + id.toString());
 
       return response.data;
     } catch (error) {
@@ -87,7 +105,11 @@ export const deleteUser = createAsyncThunk(
 export const { reducer, actions } = createSlice({
   name: "users",
   initialState,
-  reducers: {},
+  reducers: {
+    removeErrors(state, action) {
+      state.errors = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getUsers.pending, (state, action) => {
@@ -99,6 +121,19 @@ export const { reducer, actions } = createSlice({
       })
       .addCase(getUsers.rejected, (state, action) => {
         state.loading = false;
+      })
+      .addCase(addUser.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(addUser.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.users.push(action.payload);
+      })
+      .addCase(addUser.rejected, (state, action) => {
+        state.loading = false;
+        console.log(action.payload);
+        state.errors = action.payload as { email?: string };
       })
       .addCase(updateUser.pending, (state, action) => {
         state.loading = true;
@@ -156,5 +191,12 @@ export const selectLoading = createSelector(
   selectState,
   (state) => state.loading
 );
+
+export const selectErrors = createSelector(
+  selectState,
+  (state) => state.errors
+);
+
+export const { removeErrors } = actions;
 
 export default reducer;

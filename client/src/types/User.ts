@@ -1,4 +1,4 @@
-import { Role, Gender } from "@prisma/client";
+import { Role } from "@prisma/client";
 
 export type UserType = {
   id: number;
@@ -6,16 +6,5 @@ export type UserType = {
   email: string;
   avatar: string;
   password: string;
-  friends: [
-    {
-      id: number;
-      name: string;
-      email: string;
-      gender: Gender;
-      age: number;
-      hobbies: string;
-      description: string;
-    }
-  ];
   role: Role;
 };
