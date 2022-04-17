@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import gravatar from "gravatar";
 import { PrismaClient, Role } from "@prisma/client";
 
 const router = Router();
@@ -11,8 +12,8 @@ const prisma = new PrismaClient();
 // @PARAMS
 router.get("/", async (req: Request, res: Response) => {
   const users = await prisma.user.findMany({
-    include: {
-      friends: true,
+    where: {
+      role: Role.USER,
     },
     orderBy: [{ id: "asc" }],
   });
@@ -37,11 +38,39 @@ router.get("/user/:id", async (req: Request, res: Response) => {
 // @DESC    Create new user (only admin)
 // @PARAMS  User data
 router.post("/user", async (req: Request, res: Response) => {
-  const user = await prisma.user.create({
-    data: req.body,
+  const errors: { email: string } = { email: "" };
+  // check email already exist
+  const user = await prisma.user.findUnique({
+    where: {
+      email: req.body.email,
+    },
   });
 
-  res.status(201).json(user);
+  if (user) {
+    errors.email = "Email already exist";
+    return res.status(400).json(errors);
+  }
+
+  const avatar = gravatar.url(req.body.email, {
+    s: "200",
+    r: "pg",
+    d: "mm",
+  });
+
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(req.body.password, salt);
+
+  const newUser = await prisma.user.create({
+    data: {
+      email: req.body.email,
+      name: req.body.name,
+      avatar: avatar,
+      password: hash,
+      role: Role.USER,
+    },
+  });
+
+  return res.status(200).json(newUser);
 });
 
 // @API     PUT users/user/:id

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { Friend, Gender, PrismaClient } from "@prisma/client";
 
 const router = Router();
 
@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 router.get("/", async (req: Request, res: Response) => {
   const friends = await prisma.friend.findMany({
     where: {
-      user_id: req.body.id,
+      user_id: Number(req.query.id),
     },
   });
 
@@ -22,8 +22,19 @@ router.get("/", async (req: Request, res: Response) => {
 // @DESC    Create new friend
 // @PARAMS  Friend data
 router.post("/friend", async (req: Request, res: Response) => {
+  const { name, email, gender, age, hobbies, description, user_id } = req.body;
   const friend = await prisma.friend.create({
-    data: req.body,
+    data: {
+      name,
+      email,
+      gender,
+      age,
+      hobbies,
+      description,
+      user: {
+        connect: { id: Number(user_id) },
+      },
+    },
   });
 
   res.status(201).json(friend);
@@ -53,7 +64,9 @@ router.delete("/friend/:id", async (req: Request, res: Response) => {
     },
   });
 
-  res.status(200).json();
+  res.status(200).json({
+    id: Number(req.params.id),
+  });
 });
 
 export default router;
