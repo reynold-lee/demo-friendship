@@ -13,6 +13,9 @@ router.get("/", async (req: Request, res: Response) => {
     where: {
       user_id: Number(req.query.id),
     },
+    orderBy: {
+      id: "asc",
+    },
   });
 
   res.status(200).json(friends);
@@ -22,8 +25,23 @@ router.get("/", async (req: Request, res: Response) => {
 // @DESC    Create new friend
 // @PARAMS  Friend data
 router.post("/friend", async (req: Request, res: Response) => {
-  const { name, email, gender, age, hobbies, description, user_id } = req.body;
-  const friend = await prisma.friend.create({
+  const { name, email, gender, age, hobbies, description, user_id }: Friend =
+    req.body;
+
+  const errors: { email: string } = { email: "" };
+  // check email already exist
+  const friend = await prisma.friend.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
+  if (friend) {
+    errors.email = "Email already exist";
+    return res.status(400).json(errors);
+  }
+
+  const newFriend = await prisma.friend.create({
     data: {
       name,
       email,
@@ -32,12 +50,12 @@ router.post("/friend", async (req: Request, res: Response) => {
       hobbies,
       description,
       user: {
-        connect: { id: Number(user_id) },
+        connect: { id: user_id },
       },
     },
   });
 
-  res.status(201).json(friend);
+  res.status(201).json(newFriend);
 });
 
 // @API     PUT friends/friend/:id
