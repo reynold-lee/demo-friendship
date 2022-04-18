@@ -9,6 +9,7 @@ import {
 } from "@mui/x-data-grid";
 
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
 import { toast } from "react-toastify";
 
@@ -19,7 +20,9 @@ import {
   updateFriend,
   deleteFriend,
 } from "../../../redux/reducers/friendsReducer";
+
 import { Friend, Gender } from "@prisma/client";
+import AddFriend from "./addFriend";
 
 interface FriendsProps {
   user_id: number;
@@ -30,6 +33,7 @@ interface FriendsProps {
 function Friends(props: FriendsProps) {
   const dispatch = useAppDispatch();
   const friends = useAppSelector(selectFriends);
+  const [isAddFriendOpen, setIsAddFriendOpen] = React.useState(false);
 
   const theme = Mui.useTheme();
   const fullScreen = Mui.useMediaQuery(theme.breakpoints.down("md"));
@@ -51,11 +55,9 @@ function Friends(props: FriendsProps) {
     async (newRow: GridRowModel, oldRow: GridRowModel) => {
       if (isMutation(newRow, oldRow))
         try {
-          await toast.promise(dispatch(updateFriend(newRow)), {
-            pending: "Updating...",
-            success: "Success",
-            error: "Failed",
-          });
+          const resultAction = await dispatch(updateFriend(newRow));
+          if (updateFriend.fulfilled.match(resultAction))
+            toast.success("Success");
           return newRow;
         } catch (error) {
           throw error;
@@ -68,17 +70,22 @@ function Friends(props: FriendsProps) {
   const handleDelete = React.useCallback(
     async (id: number) => {
       try {
-        await toast.promise(dispatch(deleteFriend(id)), {
-          pending: "Deleting...",
-          success: "Success",
-          error: "Failed",
-        });
+        const resultAction = await dispatch(deleteFriend(id));
+        if (deleteFriend.fulfilled.match(resultAction))
+          toast.success("Success");
       } catch (error) {
         throw error;
       }
     },
     [dispatch]
   );
+
+  const handleCloseAddFriend = (
+    event: React.SyntheticEvent<unknown>,
+    reason?: string
+  ) => {
+    if (reason !== "backdropClick") setIsAddFriendOpen(false);
+  };
 
   const columns: GridColDef[] = React.useMemo(() => {
     return [
@@ -155,7 +162,20 @@ function Friends(props: FriendsProps) {
       aria-labelledby="responsive-dialog-title"
       disableEscapeKeyDown
     >
-      <Mui.DialogTitle id="responsive-dialog-title">Friends</Mui.DialogTitle>
+      <Mui.DialogTitle
+        id="responsive-dialog-title"
+        sx={{ display: "flex", justifyContent: "space-between" }}
+      >
+        Friends
+        <Mui.Button
+          color="primary"
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setIsAddFriendOpen(true)}
+        >
+          Add Friend
+        </Mui.Button>
+      </Mui.DialogTitle>
       <Mui.DialogContent sx={{ height: "50vh" }}>
         <DataGrid
           rows={friends as Omit<Friend, "user_id">[]}
@@ -172,6 +192,11 @@ function Friends(props: FriendsProps) {
           Cancel
         </Mui.Button>
       </Mui.DialogActions>
+      <AddFriend
+        user_id={props.user_id}
+        open={isAddFriendOpen}
+        handleClose={handleCloseAddFriend}
+      />
     </Mui.Dialog>
   );
 }

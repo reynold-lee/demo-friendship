@@ -7,7 +7,7 @@ import axios from "axios";
 
 import type { RootState } from "../store";
 import { FriendType } from "../../types/Friend";
-import { Friend } from "@prisma/client";
+import { Friend, Gender } from "@prisma/client";
 
 // axios set base url
 const instance = axios.create({
@@ -20,6 +20,9 @@ const instance = axios.create({
 interface FriendsState {
   loading: boolean;
   friends: FriendType[];
+  errors?: {
+    email?: string;
+  };
 }
 
 const initialState: FriendsState = {
@@ -36,6 +39,29 @@ export const getFriends = createAsyncThunk(
       return response.data;
     } catch (error) {
       throw error;
+    }
+  }
+);
+
+export const addFriend = createAsyncThunk(
+  "friends/addFriend",
+  async (
+    request: {
+      name: string;
+      email: string;
+      gender: Gender;
+      age: number;
+      hobbies: string;
+      description: string;
+      user_id: number;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await instance.post("friends/friend", request);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error?.response.data);
     }
   }
 );
@@ -70,7 +96,11 @@ export const deleteFriend = createAsyncThunk(
 export const { reducer, actions } = createSlice({
   name: "users",
   initialState,
-  reducers: {},
+  reducers: {
+    removeErrors(state, action) {
+      state.errors = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getFriends.pending, (state, action) => {
@@ -83,6 +113,19 @@ export const { reducer, actions } = createSlice({
       })
       .addCase(getFriends.rejected, (state, action) => {
         state.loading = false;
+      })
+      .addCase(addFriend.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(addFriend.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.friends.push(action.payload);
+      })
+      .addCase(addFriend.rejected, (state, action) => {
+        state.loading = false;
+
+        state.errors = action.payload as { email?: string };
       })
       .addCase(updateFriend.pending, (state, action) => {
         state.loading = true;
@@ -123,5 +166,12 @@ export const selectFriends = createSelector(
   selectState,
   (state) => state.friends
 );
+
+export const selectErrors = createSelector(
+  selectState,
+  (state) => state.errors
+);
+
+export const { removeErrors } = actions;
 
 export default reducer;

@@ -19,7 +19,7 @@ import {
 
 import "react-toastify/dist/ReactToastify.css";
 
-function App() {
+function App(): JSX.Element {
   const dispatch = useAppDispatch();
   const isVerifying = useAppSelector(selectIsVerifying);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);

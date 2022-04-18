@@ -15,6 +15,7 @@ import AddIcon from "@mui/icons-material/Add";
 import LockResetRoundedIcon from "@mui/icons-material/LockResetRounded";
 
 import { ToastContainer, toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
@@ -65,20 +66,16 @@ function Users() {
     async (newRow: GridRowModel, oldRow: GridRowModel) => {
       if (isMutation(newRow, oldRow))
         try {
-          await toast.promise(
-            dispatch(
-              updateUser({
-                id: newRow.id,
-                email: newRow.email,
-                name: newRow.name,
-              })
-            ),
-            {
-              pending: "Updating...",
-              success: "Success",
-              error: "Failed",
-            }
+          const resultAction = await dispatch(
+            updateUser({
+              id: newRow.id,
+              email: newRow.email,
+              name: newRow.name,
+            })
           );
+
+          if (updateUser.fulfilled.match(resultAction))
+            toast.success("Success");
 
           return newRow;
         } catch (error) {
@@ -93,10 +90,18 @@ function Users() {
   const handleDelete = React.useCallback(
     async (id: number) => {
       try {
-        await toast.promise(dispatch(deleteUser(id)), {
-          pending: "Deleting...",
-          success: "Success",
-          error: "Failed",
+        Swal.fire({
+          title: "Delete User",
+          text: "Are u really delete?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, delete user",
+        }).then(async (result) => {
+          if (result.value) {
+            const resultAction = await dispatch(deleteUser(id));
+            if (deleteUser.fulfilled.match(resultAction))
+              toast.success("Success");
+          }
         });
       } catch (error) {
         throw error;
@@ -108,10 +113,18 @@ function Users() {
   const handleResetPassword = React.useCallback(
     async (id: number) => {
       try {
-        await toast.promise(dispatch(resetPassword(id)), {
-          pending: "Resetting password...",
-          success: "Success",
-          error: "Failed",
+        Swal.fire({
+          title: "Reset Password",
+          text: "Are u really reset password?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, reset password",
+        }).then(async (result) => {
+          if (result.value) {
+            const resultAction = await dispatch(resetPassword(id));
+            if (resetPassword.fulfilled.match(resultAction))
+              toast.success("Success");
+          }
         });
       } catch (error) {
         throw error;

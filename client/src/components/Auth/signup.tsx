@@ -53,17 +53,16 @@ function SignUp() {
       .oneOf([Yup.ref("password"), null], "Passwords must be match"),
   });
 
-  const handleSignUp = async (values: SignUpType) => {
-    await toast.promise(dispatch(signup(values)), {
-      pending: "Processing...",
-      success: {
-        render() {
-          navigate("/signin");
-        },
-      },
-      error: "Failed",
-    });
-  };
+  const handleSignUp = React.useCallback(
+    async (values: SignUpType) => {
+      const resultAction = await dispatch(signup(values));
+      if (signup.fulfilled.match(resultAction)) {
+        toast.success("Success");
+        setTimeout(() => navigate("/signin"), 1000);
+      }
+    },
+    [dispatch, navigate]
+  );
 
   return (
     <div className="register">
