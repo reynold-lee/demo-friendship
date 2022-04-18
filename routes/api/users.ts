@@ -15,6 +15,13 @@ router.get("/", async (req: Request, res: Response) => {
     where: {
       role: Role.USER,
     },
+    include: {
+      _count: {
+        select: {
+          friends: true,
+        },
+      },
+    },
     orderBy: [{ id: "asc" }],
   });
 
