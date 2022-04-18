@@ -12,6 +12,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
@@ -19,6 +20,7 @@ import {
   getFriends,
   updateFriend,
   deleteFriend,
+  removeErrors,
 } from "../../../redux/reducers/friendsReducer";
 
 import { Friend, Gender } from "@prisma/client";
@@ -70,9 +72,19 @@ function Friends(props: FriendsProps) {
   const handleDelete = React.useCallback(
     async (id: number) => {
       try {
-        const resultAction = await dispatch(deleteFriend(id));
-        if (deleteFriend.fulfilled.match(resultAction))
-          toast.success("Success");
+        Swal.fire({
+          title: "Delete Friend",
+          text: "Are u really delete?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, delete friend",
+        }).then(async (result) => {
+          if (result.value) {
+            const resultAction = await dispatch(deleteFriend(id));
+            if (deleteFriend.fulfilled.match(resultAction))
+              toast.success("Success");
+          }
+        });
       } catch (error) {
         throw error;
       }
@@ -84,7 +96,10 @@ function Friends(props: FriendsProps) {
     event: React.SyntheticEvent<unknown>,
     reason?: string
   ) => {
-    if (reason !== "backdropClick") setIsAddFriendOpen(false);
+    if (reason !== "backdropClick") {
+      setIsAddFriendOpen(false);
+      dispatch(removeErrors({}));
+    }
   };
 
   const columns: GridColDef[] = React.useMemo(() => {

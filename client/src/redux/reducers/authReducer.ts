@@ -16,7 +16,7 @@ interface AuthState {
   loading: boolean;
   isAuthenticated: boolean;
   isVerifying: boolean;
-  user?: Omit<UserType, "friends" | "password">;
+  user?: Omit<UserType, "friends" | "password" | "_count">;
   errors?: {
     name?: string;
     email?: string;
@@ -135,7 +135,10 @@ export const { reducer, actions } = createSlice({
       .addCase(verify.fulfilled, (state, action) => {
         state.isVerifying = false;
         state.isAuthenticated = true;
-        state.user = action.payload as Omit<UserType, "friends" | "password">;
+        state.user = action.payload as Omit<
+          UserType,
+          "friends" | "password" | "_count"
+        >;
       })
       .addCase(verify.rejected, (state, action) => {
         state.isVerifying = false;

@@ -128,7 +128,8 @@ export const { reducer, actions } = createSlice({
       .addCase(addUser.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.users.push(action.payload);
+        const newUser = action.payload as UserType;
+        state.users.push({ ...newUser, _count: { friends: 0 } });
       })
       .addCase(addUser.rejected, (state, action) => {
         state.loading = false;
@@ -195,6 +196,11 @@ export const selectLoading = createSelector(
 export const selectErrors = createSelector(
   selectState,
   (state) => state.errors
+);
+
+export const selectTotal = createSelector(
+  selectState,
+  (state) => state.users.length
 );
 
 export const { removeErrors } = actions;

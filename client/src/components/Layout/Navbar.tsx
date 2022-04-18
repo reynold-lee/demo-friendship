@@ -11,6 +11,7 @@ import {
   selectIsAuthenticated,
   selectUser,
 } from "../../redux/reducers/authReducer";
+import { selectTotal } from "../../redux/reducers/usersReducer";
 
 function Navbar() {
   const dispatch = useAppDispatch();
@@ -18,6 +19,7 @@ function Navbar() {
 
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectUser);
+  const total = useAppSelector(selectTotal);
 
   const handleSignOut = React.useCallback(() => {
     dispatch(signout({}));
@@ -82,7 +84,9 @@ function Navbar() {
             sx={{ my: 2, color: "white", display: "block" }}
             onClick={() => navigate("dashboard/admin/summary")}
           >
-            Summary
+            <Mui.Badge color="warning" badgeContent={total}>
+              Summary
+            </Mui.Badge>
           </Mui.Button>
           <Mui.Button
             sx={{ my: 2, color: "white", display: "block" }}
@@ -101,7 +105,7 @@ function Navbar() {
         </Mui.Stack>
       </Mui.Box>
     );
-  }, [handleSignOut, navigate, user?.avatar, user?.name]);
+  }, [handleSignOut, navigate, total, user?.avatar, user?.name]);
 
   const guestLinks = React.useMemo<React.ReactNode>(() => {
     return (

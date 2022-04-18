@@ -7,4 +7,7 @@ export type UserType = {
   avatar: string;
   password: string;
   role: Role;
+  _count: {
+    friends: number;
+  };
 };

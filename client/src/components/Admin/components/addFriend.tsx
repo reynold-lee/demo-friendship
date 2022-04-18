@@ -10,6 +10,8 @@ import {
   removeErrors,
 } from "../../../redux/reducers/friendsReducer";
 
+import { ToastContainer, toast } from "react-toastify";
+
 import isEmpty from "../../../utils/is-empty";
 import { FriendType } from "../../../types/Friend";
 import { Gender } from "@prisma/client";
@@ -52,11 +54,15 @@ function AddFriend(props: AddFriendProps) {
   };
 
   const handleAddFriend = React.useCallback(
-    async (values: AddFriendType) => {
+    async (values: AddFriendType, { resetForm }) => {
       try {
         values.user_id = props.user_id;
 
-        await dispatch(addFriend(values));
+        const resultAction = await dispatch(addFriend(values));
+        if (addFriend.fulfilled.match(resultAction)) {
+          toast.success("Success");
+          resetForm();
+        }
       } catch (error) {
         throw error;
       }
@@ -73,6 +79,7 @@ function AddFriend(props: AddFriendProps) {
       aria-labelledby="responsive-dialog-title"
       disableEscapeKeyDown
     >
+      <ToastContainer />
       <Mui.DialogTitle id="responsive-dialog-title">Friends</Mui.DialogTitle>
       <Mui.DialogContent>
         <Formik

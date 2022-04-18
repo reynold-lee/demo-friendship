@@ -12,6 +12,8 @@ import {
   addUser,
 } from "../../../redux/reducers/usersReducer";
 
+import { ToastContainer, toast } from "react-toastify";
+
 import isEmpty from "../../../utils/is-empty";
 import { UserType } from "../../../types/User";
 
@@ -20,7 +22,9 @@ interface AddUserProps {
   handleClose: (event: React.SyntheticEvent<unknown>) => void;
 }
 
-type AddUserType = Omit<UserType, "id" | "avatar"> & { password2: string };
+type AddUserType = Omit<UserType, "id" | "avatar" | "_count"> & {
+  password2: string;
+};
 
 const initialValues: AddUserType = {
   name: "",
@@ -49,9 +53,16 @@ function AddUser(props: AddUserProps) {
   const server_errors = useAppSelector(selectErrors);
 
   const handleAddUser = React.useCallback(
-    async (values: { name: string; email: string; password: string }) => {
+    async (
+      values: { name: string; email: string; password: string },
+      { resetForm }
+    ) => {
       try {
-        await dispatch(addUser(values));
+        const resultAction = await dispatch(addUser(values));
+        if (addUser.fulfilled.match(resultAction)) {
+          toast.success("Success");
+          resetForm();
+        }
       } catch (error) {
         throw error;
       }
@@ -68,6 +79,7 @@ function AddUser(props: AddUserProps) {
       aria-labelledby="responsive-dialog-title"
       disableEscapeKeyDown
     >
+      <ToastContainer />
       <Mui.DialogTitle id="responsive-dialog-title">Add User</Mui.DialogTitle>
       <Mui.DialogContent>
         <Formik

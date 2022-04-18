@@ -24,6 +24,8 @@ import {
   updateUser,
   resetPassword,
   deleteUser,
+  removeErrors,
+  selectLoading,
 } from "../../redux/reducers/usersReducer";
 
 import Friends from "./components/friends";
@@ -32,11 +34,13 @@ import AddUser from "./components/addUser";
 
 function Users() {
   const dispatch = useAppDispatch();
+  const users: UserType[] | undefined = useAppSelector(selectUsers);
+  const loading = useAppSelector(selectLoading);
 
   const [openFriends, setOpenFriends] = React.useState(false);
   const [openAddUser, setOpenAddUser] = React.useState(false);
   const [userId, setUserId] = React.useState(0);
-  const users: UserType[] | undefined = useAppSelector(selectUsers);
+  const isLoaded = React.useRef<boolean>(false);
 
   const isMutation = React.useCallback(
     (newRow: GridRowModel, oldRow: GridRowModel) => {
@@ -143,7 +147,10 @@ function Users() {
     event: React.SyntheticEvent<unknown>,
     reason?: string
   ) => {
-    if (reason !== "backdropClick") setOpenAddUser(false);
+    if (reason !== "backdropClick") {
+      setOpenAddUser(false);
+      dispatch(removeErrors({}));
+    }
   };
 
   const columns: GridColDef[] = React.useMemo(() => {
@@ -232,7 +239,10 @@ function Users() {
 
   React.useEffect(() => {
     return () => {
-      dispatch(getUsers());
+      if (!isLoaded.current) {
+        dispatch(getUsers());
+        isLoaded.current = true;
+      }
     };
   }, [dispatch]);
 
@@ -245,6 +255,7 @@ function Users() {
         paginationMode="client"
         processRowUpdate={processRowUpdate}
         experimentalFeatures={{ newEditingApi: true }}
+        loading={loading}
         checkboxSelection
         disableSelectionOnClick
         components={{ Toolbar: () => Toolbar }}
