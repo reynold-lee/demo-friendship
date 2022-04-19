@@ -9,16 +9,14 @@ import { Role } from "@prisma/client";
 
 import type { RootState } from "../store";
 import { UserType } from "../../types/User";
+import { setAuthToken } from "../../utils/setAuthToken";
 
-// axios set base url
-const instance = axios.create({
-  baseURL: "http://localhost:5000",
-});
+type AuthUserType = Omit<UserType, "_count">;
 interface AuthState {
   loading: boolean;
   isAuthenticated: boolean;
   isVerifying: boolean;
-  user: Omit<UserType, "password" | "_count">;
+  user: AuthUserType;
   errors?: {
     name?: string;
     email?: string;
@@ -36,6 +34,7 @@ const initialState: AuthState = {
     name: "",
     email: "",
     avatar: "",
+    password: "",
     role: Role.USER,
   },
 };
@@ -48,7 +47,7 @@ export const signin = createAsyncThunk(
     { rejectWithValue, dispatch }
   ) => {
     try {
-      const response = await instance.post<{ success: boolean; token: string }>(
+      const response = await axios.post<{ success: boolean; token: string }>(
         "/signin",
         request
       );
@@ -79,7 +78,7 @@ export const signup = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await instance.post("/signup", request);
+      const response = await axios.post("/signup", request);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error?.response.data);
@@ -89,23 +88,25 @@ export const signup = createAsyncThunk(
 
 // verify token
 export const verify = createAsyncThunk("auth/verify", async () => {
-  const response = await instance.post("/verify", {
-    token: localStorage.getItem("jwtToken"),
-  });
-
-  return response.data;
+  try {
+    const response = await axios.post("/verify", {
+      token: localStorage.getItem("jwtToken"),
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 });
 
 export const { reducer, actions } = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    signout(state, action): void {
+    signout(state): void {
       // remove token from local storage
       localStorage.removeItem("jwtToken");
-
       state.isAuthenticated = false;
-      state.user = action.payload;
+      state.user = {} as AuthUserType;
     },
     removeErrors(state, action) {
       state.errors = action.payload;
@@ -144,7 +145,9 @@ export const { reducer, actions } = createSlice({
       .addCase(verify.fulfilled, (state, action) => {
         state.isVerifying = false;
         state.isAuthenticated = true;
-        state.user = action.payload as Omit<UserType, "password" | "_count">;
+        state.user = action.payload as AuthUserType;
+
+        setAuthToken(localStorage.getItem("jwtToken"));
       })
       .addCase(verify.rejected, (state, action) => {
         state.isVerifying = false;

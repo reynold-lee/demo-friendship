@@ -9,14 +9,6 @@ import type { RootState } from "../store";
 import { FriendType } from "../../types/Friend";
 import { Friend, Gender } from "@prisma/client";
 
-// axios set base url
-const instance = axios.create({
-  baseURL: "http://localhost:5000",
-  headers: {
-    Authorization: "Bearer " + localStorage.getItem("jwtToken"),
-  },
-});
-
 interface FriendsState {
   loading: boolean;
   friends: FriendType[];
@@ -34,7 +26,7 @@ export const getFriends = createAsyncThunk(
   "friends/getFriends",
   async (request: { id: number }) => {
     try {
-      const response = await instance.get("/friends", { params: request });
+      const response = await axios.get("/friends", { params: request });
 
       return response.data;
     } catch (error) {
@@ -58,7 +50,7 @@ export const addFriend = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await instance.post("friends/friend", request);
+      const response = await axios.post("friends/friend", request);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error?.response.data);
@@ -70,10 +62,7 @@ export const updateFriend = createAsyncThunk(
   "friend/update",
   async (request: Friend) => {
     try {
-      const response = await instance.put(
-        "friends/friend/" + request.id,
-        request
-      );
+      const response = await axios.put("friends/friend/" + request.id, request);
       return response.data;
     } catch (error) {
       throw error;
@@ -85,7 +74,7 @@ export const deleteFriend = createAsyncThunk(
   "friend/delete",
   async (id: number) => {
     try {
-      const response = await instance.delete("friends/friend/" + id.toString());
+      const response = await axios.delete("friends/friend/" + id.toString());
       return response.data;
     } catch (error) {
       throw error;

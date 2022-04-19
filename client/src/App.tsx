@@ -19,6 +19,10 @@ import {
 
 import "react-toastify/dist/ReactToastify.css";
 
+import axios from "axios";
+
+axios.defaults.baseURL = process.env.BASE_URL || "http://localhost:5000";
+
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
   const isVerifying = useAppSelector(selectIsVerifying);

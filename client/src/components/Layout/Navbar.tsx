@@ -24,7 +24,7 @@ function Navbar() {
   const totalFriends = useAppSelector(selectTotalFriends);
 
   const handleSignOut = React.useCallback(() => {
-    dispatch(signout({}));
+    dispatch(signout());
   }, [dispatch]);
 
   const userLinks = React.useMemo<React.ReactNode>(() => {

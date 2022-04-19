@@ -59,8 +59,8 @@ function Profile() {
     return {
       name: auth.name,
       email: auth.email,
-      password: "1234567890",
-      password2: "1234567890",
+      password: "",
+      password2: "",
       role: auth.role,
     };
   }, [auth.email, auth.name, auth.role]);
@@ -143,11 +143,16 @@ function Profile() {
               id: auth.id,
               email: values.email,
               name: values.name,
+              password: values.password,
             })
           );
 
-          if (updateUser.fulfilled.match(resultAction))
+          if (updateUser.fulfilled.match(resultAction)) {
             toast.success("Success");
+            setIsEditMode(false);
+          }
+        } else {
+          toast.warning("No fields have been updated");
         }
       } catch (error) {
         throw error;
@@ -167,6 +172,7 @@ function Profile() {
 
   return (
     <Mui.Card sx={{ padding: 3, margin: 3, width: "50%", marginX: "auto" }}>
+      <ToastContainer />
       <Mui.CardHeader
         avatar={
           <Mui.Avatar
@@ -265,7 +271,7 @@ function Profile() {
                   label="Password"
                   name="password"
                   type="password"
-                  value={values.password}
+                  value={isEditMode ? values.password : auth.password}
                   autoComplete="password"
                   onChange={handleChange}
                   error={touched.password && Boolean(errors.password)}
@@ -273,27 +279,29 @@ function Profile() {
                   InputProps={{ readOnly: !isEditMode }}
                 />
 
-                <Mui.TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="password2"
-                  label="Confirm Password"
-                  name="password2"
-                  type="password"
-                  value={values.password2}
-                  autoComplete="password2"
-                  onChange={handleChange}
-                  error={touched.password2 && Boolean(errors.password2)}
-                  helperText={touched.password2 && errors.password2}
-                  InputProps={{ readOnly: !isEditMode }}
-                />
+                {isEditMode && (
+                  <Mui.TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="password2"
+                    label="Confirm Password"
+                    name="password2"
+                    type="password"
+                    value={values.password2}
+                    autoComplete="password2"
+                    onChange={handleChange}
+                    error={touched.password2 && Boolean(errors.password2)}
+                    helperText={touched.password2 && errors.password2}
+                    InputProps={{ readOnly: !isEditMode }}
+                  />
+                )}
 
                 <Mui.Stack direction="row" justifyContent="end">
                   {isEditMode ? (
                     <Mui.Box>
                       <Mui.Button onClick={() => handleSubmit()}>
-                        Submit
+                        Save
                       </Mui.Button>
                       <Mui.Button
                         onClick={() => {

@@ -8,14 +8,6 @@ import axios from "axios";
 import type { RootState } from "../store";
 import { UserType } from "../../types/User";
 
-// axios set base url
-const instance = axios.create({
-  baseURL: "http://localhost:5000",
-  headers: {
-    Authorization: "Bearer " + localStorage.getItem("jwtToken"),
-  },
-});
-
 interface UsersState {
   loading: boolean;
   users: UserType[];
@@ -34,7 +26,8 @@ const initialState: UsersState = {
 
 export const getUsers = createAsyncThunk("users/getUsers", async () => {
   try {
-    const response = await instance.get<UserType[]>("/users");
+    console.log(axios.defaults);
+    const response = await axios.get<UserType[]>("/users");
     return response.data;
   } catch (error) {
     throw error;
@@ -48,7 +41,7 @@ export const addUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await instance.post("users/user", request);
+      const response = await axios.post("users/user", request);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error?.response.data);
@@ -58,15 +51,18 @@ export const addUser = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   "user/update",
-  async (request: { id: number; email?: string; name?: string }) => {
+  async (request: {
+    id: number;
+    email?: string;
+    name?: string;
+    password?: string;
+  }) => {
     try {
-      const response = await instance.put(
-        "users/user/" + request.id.toString(),
-        {
-          email: request.email,
-          name: request.name,
-        }
-      );
+      const response = await axios.put("users/user/" + request.id.toString(), {
+        email: request.email,
+        name: request.name,
+        password: request.password,
+      });
       return response.data;
     } catch (error: any) {
       throw error;
@@ -78,7 +74,7 @@ export const resetPassword = createAsyncThunk(
   "user/resetpassword",
   async (id: number) => {
     try {
-      const response = await instance.put(
+      const response = await axios.put(
         "users/user/" + id.toString() + "/resetpassword"
       );
 
@@ -93,7 +89,7 @@ export const deleteUser = createAsyncThunk(
   "user/delete",
   async (id: number) => {
     try {
-      const response = await instance.delete("users/user/" + id.toString());
+      const response = await axios.delete("users/user/" + id.toString());
 
       return response.data;
     } catch (error) {

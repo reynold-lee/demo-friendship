@@ -1,9 +1,6 @@
 import * as React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-// import { useAppDispatch } from "../../redux/hooks";
-// import { signout } from "../../redux/reducers/authReducer";
-
 import Friends from "./Friends";
 import Profile from "./Profile";
 
