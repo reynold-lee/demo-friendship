@@ -172,6 +172,16 @@ export const selectErrors = createSelector(
   (state) => state.errors
 );
 
+export const selectLoading = createSelector(
+  selectState,
+  (state) => state.loading
+);
+
+export const selectTotal = createSelector(
+  selectState,
+  (state) => state.friends.length
+);
+
 export const { removeErrors } = actions;
 
 export default reducer;

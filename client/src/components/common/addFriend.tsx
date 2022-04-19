@@ -3,17 +3,17 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import * as Mui from "@mui/material";
 
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   addFriend,
   selectErrors,
   removeErrors,
-} from "../../../redux/reducers/friendsReducer";
+} from "../../redux/reducers/friendsReducer";
 
 import { ToastContainer, toast } from "react-toastify";
 
-import isEmpty from "../../../utils/is-empty";
-import { FriendType } from "../../../types/Friend";
+import isEmpty from "../../utils/is-empty";
+import { FriendType } from "../../types/Friend";
 import { Gender } from "@prisma/client";
 
 type AddFriendType = Omit<FriendType, "id">;

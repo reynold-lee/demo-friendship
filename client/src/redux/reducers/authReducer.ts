@@ -5,6 +5,8 @@ import {
 } from "@reduxjs/toolkit";
 import axios from "axios";
 
+import { Role } from "@prisma/client";
+
 import type { RootState } from "../store";
 import { UserType } from "../../types/User";
 
@@ -16,7 +18,7 @@ interface AuthState {
   loading: boolean;
   isAuthenticated: boolean;
   isVerifying: boolean;
-  user?: Omit<UserType, "friends" | "password" | "_count">;
+  user: Omit<UserType, "password" | "_count">;
   errors?: {
     name?: string;
     email?: string;
@@ -29,6 +31,13 @@ const initialState: AuthState = {
   loading: false,
   isAuthenticated: false,
   isVerifying: true,
+  user: {
+    id: 0,
+    name: "",
+    email: "",
+    avatar: "",
+    role: Role.USER,
+  },
 };
 
 // signin
@@ -135,10 +144,7 @@ export const { reducer, actions } = createSlice({
       .addCase(verify.fulfilled, (state, action) => {
         state.isVerifying = false;
         state.isAuthenticated = true;
-        state.user = action.payload as Omit<
-          UserType,
-          "friends" | "password" | "_count"
-        >;
+        state.user = action.payload as Omit<UserType, "password" | "_count">;
       })
       .addCase(verify.rejected, (state, action) => {
         state.isVerifying = false;

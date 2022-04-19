@@ -5,17 +5,17 @@ import * as Mui from "@mui/material";
 
 import { Role } from "@prisma/client";
 
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   selectErrors,
   removeErrors,
   addUser,
-} from "../../../redux/reducers/usersReducer";
+} from "../../redux/reducers/usersReducer";
 
 import { ToastContainer, toast } from "react-toastify";
 
-import isEmpty from "../../../utils/is-empty";
-import { UserType } from "../../../types/User";
+import isEmpty from "../../utils/is-empty";
+import { UserType } from "../../types/User";
 
 interface AddUserProps {
   open: boolean;

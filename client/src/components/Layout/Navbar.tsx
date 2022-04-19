@@ -11,7 +11,8 @@ import {
   selectIsAuthenticated,
   selectUser,
 } from "../../redux/reducers/authReducer";
-import { selectTotal } from "../../redux/reducers/usersReducer";
+import { selectTotal as selectTotalUsers } from "../../redux/reducers/usersReducer";
+import { selectTotal as selectTotalFriends } from "../../redux/reducers/friendsReducer";
 
 function Navbar() {
   const dispatch = useAppDispatch();
@@ -19,7 +20,8 @@ function Navbar() {
 
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectUser);
-  const total = useAppSelector(selectTotal);
+  const totalUsers = useAppSelector(selectTotalUsers);
+  const totalFriends = useAppSelector(selectTotalFriends);
 
   const handleSignOut = React.useCallback(() => {
     dispatch(signout({}));
@@ -44,7 +46,9 @@ function Navbar() {
             sx={{ my: 2, color: "white", display: "block" }}
             onClick={() => navigate("dashboard/user/friends")}
           >
-            Friends
+            <Mui.Badge color="warning" badgeContent={totalFriends}>
+              Friends
+            </Mui.Badge>
           </Mui.Button>
           <Mui.Button
             sx={{ my: 2, color: "white", display: "block" }}
@@ -63,7 +67,7 @@ function Navbar() {
         </Mui.Stack>
       </Mui.Box>
     );
-  }, [handleSignOut, navigate, user?.avatar, user?.name]);
+  }, [handleSignOut, navigate, totalFriends, user?.avatar, user?.name]);
 
   const adminLinks = React.useMemo(() => {
     return (
@@ -84,7 +88,7 @@ function Navbar() {
             sx={{ my: 2, color: "white", display: "block" }}
             onClick={() => navigate("dashboard/admin/summary")}
           >
-            <Mui.Badge color="warning" badgeContent={total}>
+            <Mui.Badge color="warning" badgeContent={totalUsers}>
               Summary
             </Mui.Badge>
           </Mui.Button>
@@ -105,7 +109,7 @@ function Navbar() {
         </Mui.Stack>
       </Mui.Box>
     );
-  }, [handleSignOut, navigate, total, user?.avatar, user?.name]);
+  }, [handleSignOut, navigate, totalUsers, user?.avatar, user?.name]);
 
   const guestLinks = React.useMemo<React.ReactNode>(() => {
     return (

@@ -24,7 +24,7 @@ import {
 } from "../../../redux/reducers/friendsReducer";
 
 import { Friend, Gender } from "@prisma/client";
-import AddFriend from "./addFriend";
+import AddFriend from "../../common/addFriend";
 
 interface FriendsProps {
   user_id: number;

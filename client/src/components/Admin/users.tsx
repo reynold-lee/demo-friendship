@@ -29,8 +29,8 @@ import {
 } from "../../redux/reducers/usersReducer";
 
 import Friends from "./components/friends";
+import AddUser from "../common/addUser";
 import { UserType } from "../../types/User";
-import AddUser from "./components/addUser";
 
 function Users() {
   const dispatch = useAppDispatch();

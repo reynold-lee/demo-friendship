@@ -4,13 +4,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 // import { useAppDispatch } from "../../redux/hooks";
 // import { signout } from "../../redux/reducers/authReducer";
 
-import Profile from "./Profile";
 import Friends from "./Friends";
+import Profile from "./Profile";
 
 function Dashboard() {
   return (
     <Routes>
-      <Route index element={<Profile />} />
+      <Route index element={<Friends />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/friends" element={<Friends />} />
       <Route path="*" element={<Navigate to="" />} />
