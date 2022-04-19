@@ -21,6 +21,7 @@ import {
   updateFriend,
   deleteFriend,
   removeErrors,
+  selectLoading,
 } from "../../../redux/reducers/friendsReducer";
 
 import { Friend, Gender } from "@prisma/client";
@@ -34,7 +35,9 @@ interface FriendsProps {
 
 function Friends(props: FriendsProps) {
   const dispatch = useAppDispatch();
+
   const friends = useAppSelector(selectFriends);
+  const loading = useAppSelector(selectLoading);
   const [isAddFriendOpen, setIsAddFriendOpen] = React.useState(false);
 
   const theme = Mui.useTheme();
@@ -195,6 +198,7 @@ function Friends(props: FriendsProps) {
         <DataGrid
           rows={friends as Omit<Friend, "user_id">[]}
           columns={columns}
+          loading={loading}
           paginationMode="client"
           processRowUpdate={processRowUpdate}
           experimentalFeatures={{ newEditingApi: true }}

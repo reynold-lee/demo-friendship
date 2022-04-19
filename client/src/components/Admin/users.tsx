@@ -34,6 +34,7 @@ import { UserType } from "../../types/User";
 
 function Users() {
   const dispatch = useAppDispatch();
+
   const users: UserType[] | undefined = useAppSelector(selectUsers);
   const loading = useAppSelector(selectLoading);
 
@@ -41,15 +42,6 @@ function Users() {
   const [openAddUser, setOpenAddUser] = React.useState(false);
   const [userId, setUserId] = React.useState(0);
   const isLoaded = React.useRef<boolean>(false);
-
-  const isMutation = React.useCallback(
-    (newRow: GridRowModel, oldRow: GridRowModel) => {
-      if (newRow.name !== oldRow.name) return true;
-      if (newRow.email !== oldRow.email) return true;
-      return false;
-    },
-    []
-  );
 
   const Toolbar = React.useMemo(() => {
     return (
@@ -65,6 +57,15 @@ function Users() {
       </GridToolbarContainer>
     );
   }, []);
+
+  const isMutation = React.useCallback(
+    (newRow: GridRowModel, oldRow: GridRowModel) => {
+      if (newRow.name !== oldRow.name) return true;
+      if (newRow.email !== oldRow.email) return true;
+      return false;
+    },
+    []
+  );
 
   const processRowUpdate = React.useCallback(
     async (newRow: GridRowModel, oldRow: GridRowModel) => {
@@ -143,6 +144,7 @@ function Users() {
   ) => {
     if (reason !== "backdropClick") setOpenFriends(false);
   };
+
   const handleCloseAddUser = (
     event: React.SyntheticEvent<unknown>,
     reason?: string
@@ -172,14 +174,14 @@ function Users() {
         field: "avatar",
         headerName: "Avatar",
         align: "center",
+        flex: 1,
         renderCell: (params: GridRenderCellParams<string>) => (
           <Mui.Avatar
-            alt="David"
+            alt={params.row.name}
             src={params.value}
             sx={{ width: 24, height: 24 }}
           />
         ),
-        flex: 1,
       },
       {
         field: "password",
@@ -199,8 +201,8 @@ function Users() {
       {
         field: "action",
         headerName: "Actions",
-        flex: 2,
         align: "center",
+        flex: 2,
         sortable: false,
         renderCell: (params: GridRenderCellParams) => (
           <div>

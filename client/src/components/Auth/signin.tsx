@@ -16,11 +16,7 @@ import {
 } from "../../redux/reducers/authReducer";
 
 import isEmpty from "../../utils/is-empty";
-
-type SingInType = {
-  email: string;
-  password: string;
-};
+import { SignInType } from "../../types/SignIn";
 
 function SignIn() {
   const dispatch = useAppDispatch();
@@ -29,7 +25,7 @@ function SignIn() {
   const loading = useAppSelector(selectLoading);
   const server_errors = useAppSelector(selectErrors);
 
-  const initialValues: SingInType = {
+  const initialValues: SignInType = {
     email: "",
     password: "",
   };
@@ -45,10 +41,9 @@ function SignIn() {
   });
 
   const handleSignIn = React.useCallback(
-    async (values: SingInType) => {
-      const res = await dispatch(signin(values));
-
-      if (res.type === "auth/signin/fulfilled") navigate("/dashboard/user");
+    async (values: SignInType) => {
+      const resultAction = await dispatch(signin(values));
+      if (signin.fulfilled.match(resultAction)) navigate("/dashboard/user");
     },
     [dispatch, navigate]
   );
@@ -130,14 +125,26 @@ function SignIn() {
                 />
 
                 <LoadingButton
-                  onClick={() => handleSubmit()}
+                  sx={{ marginY: 2 }}
                   loadingIndicator="Signining..."
                   loading={loading}
                   variant="contained"
+                  onClick={() => handleSubmit()}
                   fullWidth
                 >
                   Sign In
                 </LoadingButton>
+                <Mui.Grid container justifyContent="end" marginY={2}>
+                  <Mui.Grid item>
+                    <Mui.Link
+                      href="#"
+                      variant="body2"
+                      onClick={() => navigate("/signup")}
+                    >
+                      Don't have an account? Sign Up
+                    </Mui.Link>
+                  </Mui.Grid>
+                </Mui.Grid>
               </Mui.Box>
             )}
           </Formik>

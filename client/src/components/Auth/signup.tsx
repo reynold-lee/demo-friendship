@@ -17,13 +17,7 @@ import {
 } from "../../redux/reducers/authReducer";
 
 import isEmpty from "../../utils/is-empty";
-
-type SignUpType = {
-  email: string;
-  name: string;
-  password: string;
-  password2: string;
-};
+import { SignUpType } from "../../types/SignUp";
 
 function SignUp() {
   const dispatch = useAppDispatch();
@@ -187,6 +181,7 @@ function SignUp() {
                 />
 
                 <LoadingButton
+                  sx={{ marginY: 2 }}
                   onClick={() => handleSubmit()}
                   loadingIndicator="Signuping..."
                   loading={loading}
@@ -195,6 +190,17 @@ function SignUp() {
                 >
                   Sign Up
                 </LoadingButton>
+                <Mui.Grid container justifyContent="end" marginY={2}>
+                  <Mui.Grid item>
+                    <Mui.Link
+                      href="#"
+                      variant="body2"
+                      onClick={() => navigate("/signin")}
+                    >
+                      Already have an account? Sign in
+                    </Mui.Link>
+                  </Mui.Grid>
+                </Mui.Grid>
               </Mui.Box>
             )}
           </Formik>

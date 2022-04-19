@@ -26,7 +26,6 @@ const initialState: UsersState = {
 
 export const getUsers = createAsyncThunk("users/getUsers", async () => {
   try {
-    console.log(axios.defaults);
     const response = await axios.get<UserType[]>("/users");
     return response.data;
   } catch (error) {
@@ -77,7 +76,6 @@ export const resetPassword = createAsyncThunk(
       const response = await axios.put(
         "users/user/" + id.toString() + "/resetpassword"
       );
-
       return response.data;
     } catch (error) {
       throw error;
@@ -90,7 +88,6 @@ export const deleteUser = createAsyncThunk(
   async (id: number) => {
     try {
       const response = await axios.delete("users/user/" + id.toString());
-
       return response.data;
     } catch (error) {
       throw error;
@@ -123,13 +120,11 @@ export const { reducer, actions } = createSlice({
       })
       .addCase(addUser.fulfilled, (state, action) => {
         state.loading = false;
-
         const newUser = action.payload as UserType;
         state.users.push({ ...newUser, _count: { friends: 0 } });
       })
       .addCase(addUser.rejected, (state, action) => {
         state.loading = false;
-        console.log(action.payload);
         state.errors = action.payload as { email?: string };
       })
       .addCase(updateUser.pending, (state, action) => {

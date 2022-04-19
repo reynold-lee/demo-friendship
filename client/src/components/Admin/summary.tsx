@@ -8,7 +8,6 @@ function Summary() {
   const dispatch = useAppDispatch();
 
   const users = useAppSelector(selectUsers);
-
   const isLoaded = React.useRef(false);
 
   React.useEffect(() => {
@@ -21,7 +20,7 @@ function Summary() {
   }, [dispatch]);
 
   return (
-    <Mui.Box sx={{ padding: 3 }}>
+    <Mui.Box sx={{ padding: 2 }}>
       <Mui.Grid container spacing={2}>
         {users.map((user) => (
           <Mui.Grid
@@ -38,7 +37,7 @@ function Summary() {
                   <Mui.Avatar
                     alt={user.name}
                     src={user.avatar}
-                    aria-label="recipe"
+                    aria-label={user.name}
                   ></Mui.Avatar>
                 }
                 action={

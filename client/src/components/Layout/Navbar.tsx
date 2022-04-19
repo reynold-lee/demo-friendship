@@ -31,7 +31,7 @@ function Navbar() {
     return (
       <Mui.Box
         justifyContent="space-between"
-        sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+        sx={{ display: "flex", flexGrow: 1 }}
       >
         <Mui.Button sx={{ my: 2, color: "white", display: "block" }}>
           <Mui.Avatar
@@ -73,7 +73,7 @@ function Navbar() {
     return (
       <Mui.Box
         justifyContent="space-between"
-        sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+        sx={{ display: "flex", flexGrow: 1 }}
       >
         <Mui.Button sx={{ my: 2, color: "white", display: "block" }}>
           <Mui.Avatar
@@ -113,10 +113,7 @@ function Navbar() {
 
   const guestLinks = React.useMemo<React.ReactNode>(() => {
     return (
-      <Mui.Box
-        justifyContent="flex-end"
-        sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
-      >
+      <Mui.Box justifyContent="flex-end" sx={{ display: "flex", flexGrow: 1 }}>
         <Mui.Button
           sx={{ my: 2, color: "white", display: "block" }}
           onClick={() => navigate("signin")}
@@ -137,58 +134,8 @@ function Navbar() {
     <Mui.AppBar position="static">
       <Mui.Container maxWidth="xl">
         <Mui.Toolbar disableGutters>
-          {/* TODO :: Responsive */}
-          <Mui.Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ mr: 2, display: { xs: "none", md: "flex" } }}
-          >
+          <Mui.Typography variant="h6" noWrap component="div">
             FRIEND
-          </Mui.Typography>
-
-          <Mui.Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <Mui.IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-app-bar"
-              aria-haspopup="true"
-              color="inherit"
-            >
-              <MenuIcon />
-            </Mui.IconButton>
-            <Mui.Menu
-              id="menu-app-bar"
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={false}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              <Mui.MenuItem>
-                <Mui.Typography textAlign="center">SignIn</Mui.Typography>
-              </Mui.MenuItem>
-              <Mui.MenuItem>
-                <Mui.Typography textAlign="center">SignIn</Mui.Typography>
-              </Mui.MenuItem>
-            </Mui.Menu>
-          </Mui.Box>
-
-          <Mui.Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
-          >
-            Friend
           </Mui.Typography>
 
           {isAuthenticated
