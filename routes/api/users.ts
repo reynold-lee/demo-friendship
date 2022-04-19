@@ -84,9 +84,24 @@ router.post("/user", async (req: Request, res: Response) => {
 // @DESC    Update user data
 // @PARAMS  user id & new user data
 router.put("/user/:id", async (req: Request, res: Response) => {
+  // if password exist
+  if (req.body.password) {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(req.body.password, salt);
+
+    req.body.password = hash;
+  }
+
   const user = await prisma.user.update({
     where: {
       id: Number(req.params.id),
+    },
+    include: {
+      _count: {
+        select: {
+          friends: true,
+        },
+      },
     },
     data: req.body,
   });
@@ -119,6 +134,13 @@ router.put("/user/:id/resetpassword", async (req: Request, res: Response) => {
   const user = await prisma.user.update({
     where: {
       id: Number(req.params.id),
+    },
+    include: {
+      _count: {
+        select: {
+          friends: true,
+        },
+      },
     },
     data: {
       password: hash,
